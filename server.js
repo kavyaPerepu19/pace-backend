@@ -5,6 +5,10 @@ const applicationRoutes = require("./routes/applicationRoutes");
 
 const app = express();
 
+
+app.get("/", (req, res) => {
+  res.send("Pace Application Tracker Backend is running");
+});
 app.use(cors());
 app.use(express.json());
 
@@ -12,6 +16,7 @@ mongoose.connect("mongodb+srv://pkks:welcome2024@mycluster.5dby58b.mongodb.net/p
 
 app.use("/api/application", applicationRoutes);
 app.use("/api/auth", require("./routes/auth"));
+
 
 
 app.listen(5000, () => {
