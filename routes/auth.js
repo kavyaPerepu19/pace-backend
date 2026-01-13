@@ -39,27 +39,40 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    // console.log(req.body);
 
+    // 1️⃣ Verify user
     const user = await User.findOne({ email });
     if (!user) {
-      // console.log("User not found");
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) {
-      // console.log("Invalid password");
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
+    // 2️⃣ Fetch user's applications
+    const userApps = await UserApplications.findOne({ email });
+
+    // 3️⃣ Pick most recent application
+    let applicationId = null;
+    if (userApps?.applications?.length) {
+      applicationId =
+        userApps.applications[userApps.applications.length - 1];
+    }
+
+    // 4️⃣ Send everything frontend needs
     res.json({
       success: true,
       email,
+      applicationId, // 🔑 THIS FIXES EVERYTHING
     });
+
   } catch (err) {
+    console.error("LOGIN ERROR:", err);
     res.status(500).json({ error: err.message });
   }
 });
+
 
 module.exports = router;
