@@ -127,6 +127,35 @@ router.post("/create", async (req, res) => {
   }
 });
 
+router.post("/submit", async (req, res) => {
+  try {
+    const { applicationId } = req.body;
+
+    if (!applicationId) {
+      return res.status(400).json({ error: "Application ID required" });
+    }
+
+    const application = await Application.findByIdAndUpdate(
+      applicationId,
+      {
+        submitted: true,
+        submittedAt: new Date(),
+        status: "SUBMITTED",
+      },
+      { new: true }
+    );
+
+    if (!application) {
+      return res.status(404).json({ error: "Application not found" });
+    }
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error("SUBMIT ERROR:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 
 
 
